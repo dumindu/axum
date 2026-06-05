@@ -1,0 +1,22 @@
+export CARGO_TARGET_DIR := "../../target"
+
+# Run lints on the workspace members (cargo fmt and clippy)
+lint:
+    cargo +nightly fmt --package book_service -- --check
+    cargo clippy --package book_service --all-targets -- -D warnings
+
+# Run cargo check on the workspace members
+check:
+    cargo check --workspace
+
+# Run cargo build on the workspace members
+build:
+    cargo build --workspace --all-targets
+
+# Run cargo clean on the workspace members
+clean:
+    cargo clean
+
+# Run cargo test on the workspace members
+test:
+    cargo test --workspace
