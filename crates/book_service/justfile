@@ -1,22 +1,26 @@
 export CARGO_TARGET_DIR := "../../target"
 
-# Run lints on the workspace members (cargo fmt and clippy)
+# List available commands
+help:
+    @just --list --unsorted --list-heading $'📖BOOK-SERVICE\n'
+
+# Run lints (cargo fmt and clippy)
 lint:
     cargo +nightly fmt --package book_service -- --check
-    cargo clippy --package book_service --all-targets -- -D warnings
+    cargo clippy --all-targets -- -D warnings
 
-# Run cargo check on the workspace members
+# Run cargo check
 check:
-    cargo check --workspace
+    cargo check
 
-# Run cargo build on the workspace members
+# Run cargo build
 build:
-    cargo build --workspace --all-targets
+    cargo build --all-targets
 
-# Run cargo clean on the workspace members
+# Run cargo clean on the book_service package
 clean:
-    cargo clean
+    cargo clean --package book_service
 
-# Run cargo test on the workspace members
+# Run cargo test
 test:
-    cargo test --workspace
+    cargo test

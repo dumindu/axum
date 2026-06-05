@@ -1,3 +1,9 @@
+# List available commands
+help:
+    @just --list --unsorted --list-prefix '  ' --list-heading $'💡AXUM\n'
+    @echo ''
+    @just --list --unsorted --list-prefix '    ' --list-heading $'  📖BOOK SERVICE\n' --justfile crates/book_service/justfile
+
 # Run lints on the workspace members (cargo fmt and clippy)
 lint:
     cargo +nightly fmt --all --check
