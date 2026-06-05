@@ -24,3 +24,10 @@ clean:
 # Run cargo test
 test:
     cargo test
+
+## =========================================================================
+docker *cmd:
+    docker {{cmd}}
+
+build-for-prod:
+    docker build --build-context workspace_root=../../ -t book-service-app -f prod.Dockerfile .

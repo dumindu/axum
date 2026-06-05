@@ -1,4 +1,4 @@
-FROM rust:1.96.0-slim
+FROM rust:1.96.0-slim AS builder
 WORKDIR /build/crates/book_service
 
 ENV CARGO_TARGET_DIR=/build/target
@@ -15,4 +15,10 @@ cargo build --locked --release
 cp /build/target/release/book_service /usr/local/bin/book_service
 EOF
 
-CMD ["/usr/local/bin/book_service"]
+# ==============================================================================
+FROM gcr.io/distroless/cc-debian13:nonroot
+WORKDIR /book_service
+
+COPY --from=builder /usr/local/bin/book_service /book_service/app
+
+CMD ["/book_service/app"]

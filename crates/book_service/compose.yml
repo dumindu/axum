@@ -1,0 +1,8 @@
+services:
+  app:
+    container_name: book-service-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      additional_contexts:
+        workspace_root: ../..
