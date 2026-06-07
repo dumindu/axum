@@ -1,4 +1,4 @@
-use book_service::config::DbConf;
+use book_service::DbConf;
 use toasty_cli::{Config, ToastyCli};
 
 #[tokio::main]

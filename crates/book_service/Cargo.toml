@@ -16,9 +16,12 @@ path = "src/bin/migration.rs"
 
 [dependencies]
 anyhow = "1.0.102"
+axum = "0.8.9"
 envconfig = "0.11.1"
 jiff = "0.2.28"
 toasty = { version = "0.7.0", features = ["postgresql", "migration", "jiff", "serde"] }
 toasty-cli = "0.7.0"
 tokio = { version = "1.52.3", features = ["full"] }
-uuid = { version = "1.23.2", features = ["v7", "fast-rng"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["json"] }
+uuid = { version = "1.23.2", features = ["v7", "fast-rng", "serde"] }

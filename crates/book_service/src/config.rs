@@ -1,4 +1,30 @@
 use envconfig::Envconfig;
+#[derive(Envconfig)]
+pub struct AppConf {
+    #[envconfig(nested)]
+    pub sever: SeverConf,
+
+    #[envconfig(nested)]
+    pub db: DbConf,
+}
+
+impl AppConf {
+    pub fn init() -> Self {
+        Self::init_from_env().expect("Failed to load configuration! Check the .env file.")
+    }
+}
+
+#[derive(Envconfig)]
+pub struct SeverConf {
+    #[envconfig(from = "SERVER_PORT", default = "3000")]
+    pub port: u16,
+}
+
+impl SeverConf {
+    pub fn to_addr(&self) -> String {
+        format!("0.0.0.0:{}", self.port)
+    }
+}
 
 #[derive(Envconfig)]
 pub struct DbConf {

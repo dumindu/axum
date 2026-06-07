@@ -2,6 +2,7 @@ export CARGO_TARGET_DIR := "../../target"
 
 db_host := "localhost"
 db_port := "5433"
+server_port := "3001"
 
 # List available commands
 help:
@@ -33,6 +34,12 @@ migration *cmd:
     @export $(grep -v '^#' .env | xargs) && \
     DB_HOST={{ db_host }} DB_PORT={{ db_port }} \
     cargo run --bin migration -- migration {{cmd}}
+
+# Run DB migrate
+app:
+    @export $(grep -v '^#' .env | xargs) && \
+    DB_HOST={{ db_host }} DB_PORT={{ db_port }} SERVER_PORT={{ server_port }} \
+    cargo run --bin app
 
 ## =========================================================================
 docker *cmd:

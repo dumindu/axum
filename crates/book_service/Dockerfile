@@ -24,3 +24,5 @@ EOF
 
 WORKDIR /service
 CMD ["/service/app"]
+
+EXPOSE 3000

@@ -10,6 +10,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    ports:
+      - "3001:3000"
     command: [ "sh", "-c", "/service/migration migration apply && /service/app" ]
     restart: always
 
