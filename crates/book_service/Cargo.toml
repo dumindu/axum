@@ -21,4 +21,4 @@ jiff = "0.2.28"
 toasty = { version = "0.7.0", features = ["postgresql", "migration", "jiff", "serde"] }
 toasty-cli = "0.7.0"
 tokio = { version = "1.52.3", features = ["full"] }
-uuid = { version = "1.23.2", features = ["v4"] }
+uuid = { version = "1.23.2", features = ["v7", "fast-rng"] }
