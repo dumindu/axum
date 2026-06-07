@@ -3,22 +3,32 @@ WORKDIR /build/crates/book_service
 
 ENV CARGO_TARGET_DIR=/build/target
 
+RUN mkdir -p /service
+
 RUN --mount=type=bind,source=src,target=src \
     --mount=type=bind,source=Cargo.toml,target=Cargo.toml \
     --mount=type=bind,from=workspace_root,source=Cargo.lock,target=/build/Cargo.lock \
     --mount=type=bind,from=workspace_root,source=Cargo.toml,target=/build/Cargo.toml \
+    --mount=type=bind,source=toasty,target=toasty \
+    --mount=type=bind,source=Toasty.toml,target=Toasty.toml \
     --mount=type=cache,target=/build/target/ \
     --mount=type=cache,target=/usr/local/cargo/registry/ \
     <<EOF
 set -e
 cargo build --locked --release
-cp /build/target/release/book_service /usr/local/bin/book_service
+cp /build/target/release/app /service/app
+cp /build/target/release/migration /service/migration
+cp -r ./toasty /service/toasty/
+cp ./Toasty.toml /service/Toasty.toml
 EOF
 
 # ==============================================================================
 FROM gcr.io/distroless/cc-debian13:nonroot
-WORKDIR /book_service
+WORKDIR /service
 
-COPY --from=builder /usr/local/bin/book_service /book_service/app
+COPY --from=builder /service/app /service/app
+COPY --from=builder /service/migration /service/migration
+COPY --from=builder /service/Toasty.toml /service/Toasty.toml
+COPY --from=builder /service/toasty /service/toasty/
 
-CMD ["/book_service/app"]
+CMD ["/service/app"]

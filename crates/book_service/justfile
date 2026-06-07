@@ -1,5 +1,8 @@
 export CARGO_TARGET_DIR := "../../target"
 
+db_host := "localhost"
+db_port := "5433"
+
 # List available commands
 help:
     @just --list --unsorted --list-heading $'📖BOOK-SERVICE\n'
@@ -24,6 +27,12 @@ clean:
 # Run cargo test
 test:
     cargo test
+
+# Run DB migrate
+migration *cmd:
+    @export $(grep -v '^#' .env | xargs) && \
+    DB_HOST={{ db_host }} DB_PORT={{ db_port }} \
+    cargo run --bin migration -- migration {{cmd}}
 
 ## =========================================================================
 docker *cmd:
