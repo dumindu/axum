@@ -223,6 +223,7 @@ dependencies = [
  "axum",
  "envconfig",
  "jiff",
+ "serde",
  "toasty",
  "toasty-cli",
  "tokio",

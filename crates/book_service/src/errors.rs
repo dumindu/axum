@@ -12,6 +12,7 @@ pub enum Error {
     Serialization,
     Deserialization,
     InvalidResourceId,
+    NotFound,
 }
 
 impl IntoResponse for Error {
@@ -39,6 +40,7 @@ impl IntoResponse for Error {
             Error::InvalidResourceId => {
                 (StatusCode::BAD_REQUEST, b"{\"error\": \"INVALID_RESOURCE_ID\"}")
             }
+            Error::NotFound => (StatusCode::NOT_FOUND, b""),
         };
 
         let mut response = Response::new(Body::from(bytes));

@@ -1,8 +1,8 @@
 use axum::{Router, routing::get};
 
 use crate::state::AppState;
-
 mod handler;
+mod payload;
 
 pub fn router() -> Router<AppState> {
     Router::new()

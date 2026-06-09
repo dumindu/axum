@@ -18,7 +18,8 @@ path = "src/bin/migration.rs"
 anyhow = "1.0.102"
 axum = "0.8.9"
 envconfig = "0.11.1"
-jiff = "0.2.28"
+jiff = { version = "0.2.28", features = ["serde"] }
+serde = "1.0.228"
 toasty = { version = "0.7.0", features = ["postgresql", "migration", "jiff", "serde"] }
 toasty-cli = "0.7.0"
 tokio = { version = "1.52.3", features = ["full"] }
