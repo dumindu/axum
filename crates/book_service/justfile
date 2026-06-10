@@ -35,7 +35,7 @@ migration *cmd:
     DB_HOST={{ db_host }} DB_PORT={{ db_port }} \
     cargo run --bin migration -- migration {{cmd}}
 
-# Run DB migrate
+# Run server app
 app:
     @export $(grep -v '^#' .env | xargs) && \
     DB_HOST={{ db_host }} DB_PORT={{ db_port }} SERVER_PORT={{ server_port }} \

@@ -15,7 +15,7 @@
 | Environment    | Rust Image Size | Postgres Image Size |
 |----------------|-----------------|---------------------|
 | Development    | 900 MB          | 300MB               |
-| Production     | 30 MB           |                     |
+| Production     | 70 MB           |                     |
 
 ## Just commands
 
@@ -38,7 +38,7 @@ $~/dev/learning-rust/axum  just
     clean          # Run cargo clean on the book_service package
     test           # Run cargo test
     migration *cmd # Run DB migrate
-    app            # Run DB migrate
+    app            # Run server app
     docker *cmd    # Run docker commands
     build-for-prod # Build production distroless image
 ```
