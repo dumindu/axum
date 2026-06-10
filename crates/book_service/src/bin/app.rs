@@ -14,7 +14,9 @@ async fn main() -> anyhow::Result<()> {
         .models(toasty::models!(book_service::models::Book, book_service::models::Author))
         .connect(&conf.db.to_database_url())
         .await?;
-    let state = AppState { db };
+
+    let server_conf = conf.sever.clone();
+    let state = AppState { db, server_conf };
 
     let addr = conf.sever.to_addr();
     info!(addr = %addr, "Starting server");

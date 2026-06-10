@@ -6,5 +6,5 @@ pub mod errors;
 pub mod models;
 pub mod routes;
 
-pub use config::{AppConf, DbConf};
+pub use config::{AppConf, DbConf, ServerConf};
 pub use state::AppState;

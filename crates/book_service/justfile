@@ -42,8 +42,11 @@ app:
     cargo run --bin app
 
 ## =========================================================================
+
+# Run docker commands
 docker *cmd:
     docker {{cmd}}
 
+# Build production distroless image
 build-for-prod:
     docker build --build-context workspace_root=../../ -t book-service-app -f prod.Dockerfile .

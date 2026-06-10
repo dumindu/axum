@@ -2,7 +2,7 @@ use envconfig::Envconfig;
 #[derive(Envconfig)]
 pub struct AppConf {
     #[envconfig(nested)]
-    pub sever: SeverConf,
+    pub sever: ServerConf,
 
     #[envconfig(nested)]
     pub db: DbConf,
@@ -14,13 +14,19 @@ impl AppConf {
     }
 }
 
-#[derive(Envconfig)]
-pub struct SeverConf {
+#[derive(Clone, Envconfig)]
+pub struct ServerConf {
     #[envconfig(from = "SERVER_PORT", default = "3000")]
     pub port: u16,
+    #[envconfig(from = "SERVER_ALLOWED_ORIGINS")]
+    pub allowed_origins: String,
+    #[envconfig(from = "SERVER_ALLOWED_METHODS")]
+    pub allowed_methods: String,
+    #[envconfig(from = "SERVER_ALLOWED_HEADERS")]
+    pub allowed_headers: String,
 }
 
-impl SeverConf {
+impl ServerConf {
     pub fn to_addr(&self) -> String {
         format!("0.0.0.0:{}", self.port)
     }
