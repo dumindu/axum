@@ -4,13 +4,12 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
 };
-use tracing::{error, info, instrument};
+use tracing::{error, info};
 use uuid::Uuid;
 
 use super::payload::{BookRequest, BookResponse};
 use crate::{app::shared::Pagination, errors::Error, models::Book, state::AppState};
 
-#[instrument(name = "list_book", skip(state, pagination))]
 pub async fn list(
     State(mut state): State<AppState>,
     Query(pagination): Query<Pagination>,
@@ -26,13 +25,12 @@ pub async fn list(
     Ok((StatusCode::OK, Json(response)))
 }
 
-#[instrument(name = "create_book", skip(state, payload), fields(book_title = %payload.title))]
 pub async fn create(
     State(mut state): State<AppState>,
     Json(payload): Json<BookRequest>,
 ) -> Result<impl IntoResponse, Error> {
     let saved = toasty::create!(Book {
-        title: payload.title,
+        title: payload.title.clone(),
         published_date: payload.published_date,
         image_url: payload.image_url,
         description: payload.description,
@@ -44,12 +42,11 @@ pub async fn create(
         Error::DbInsert
     })?;
 
-    info!(id = %saved.id, "new book created");
+    info!(id = %saved.id, title = %payload.title, "new book created");
 
     Ok((StatusCode::CREATED, Json(BookResponse::from(saved))))
 }
 
-#[instrument(name = "read_book", skip(state))]
 pub async fn read(
     State(mut state): State<AppState>,
     Path(id): Path<Uuid>,
@@ -66,7 +63,6 @@ pub async fn read(
     Ok((StatusCode::OK, Json(BookResponse::from(book))))
 }
 
-#[instrument(name = "update_book", skip(state, payload))]
 pub async fn update(
     State(mut state): State<AppState>,
     Path(id): Path<Uuid>,
@@ -99,7 +95,6 @@ pub async fn update(
     Ok((StatusCode::OK, Json(BookResponse::from(book))))
 }
 
-#[instrument(name = "delete_book", skip(state))]
 pub async fn delete(
     State(mut state): State<AppState>,
     Path(id): Path<Uuid>,

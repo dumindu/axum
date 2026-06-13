@@ -1,22 +1,64 @@
-use std::str::FromStr;
+use std::{str::FromStr, time::Duration};
 
 use axum::{
     Router,
-    http::{HeaderName, HeaderValue, Method, StatusCode},
+    http::{HeaderName, HeaderValue, Method, Request, Response, StatusCode},
     response::IntoResponse,
     routing::get,
 };
-use tower_http::{cors::CorsLayer, trace::TraceLayer};
+use tower::ServiceBuilder;
+use tower_http::{
+    cors::CorsLayer,
+    request_id::{MakeRequestUuid, PropagateRequestIdLayer, SetRequestIdLayer},
+    trace::TraceLayer,
+};
+use tracing::{Span, info, info_span};
 
 use crate::{app, state::AppState};
 
+const REQUEST_ID_HEADER: &str = "x-request-id";
+
 pub fn init(state: AppState) -> Router {
-    let cors_layer = cors_layer(state.clone());
+    let x_request_id = HeaderName::from_static(REQUEST_ID_HEADER);
+
+    let middleware = ServiceBuilder::new()
+        .layer(SetRequestIdLayer::new(x_request_id.clone(), MakeRequestUuid))
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(|request: &Request<_>| {
+                    let request_id = request
+                        .headers()
+                        .get(REQUEST_ID_HEADER)
+                        .and_then(|value| value.to_str().ok())
+                        .unwrap_or("unknown");
+
+                    let uri_path = request.uri().path();
+
+                    info_span!(
+                        "http_request",
+                        method = ?request.method(),
+                        uri_path,
+                        request_id,
+                        status_code = tracing::field::Empty,
+                        latency = tracing::field::Empty
+                    )
+                })
+                .on_response(|response: &Response<_>, latency: Duration, span: &Span| {
+                    span.record("status_code", tracing::field::display(response.status()));
+                    span.record("latency", latency.as_millis());
+
+                    span.in_scope(|| {
+                        info!("request completed");
+                    });
+                }),
+        )
+        .layer(PropagateRequestIdLayer::new(x_request_id))
+        .layer(cors_layer(state.clone()));
+
     Router::new()
         .route("/livez", get(livez))
         .nest("/v1/books", app::book::router())
-        .layer(cors_layer)
-        .layer(TraceLayer::new_for_http())
+        .layer(middleware)
         .with_state(state)
 }
 
