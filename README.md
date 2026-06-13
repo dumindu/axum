@@ -51,12 +51,20 @@ $~/dev/learning-rust/axum  just
 ├── Cargo.lock
 ├── crates
 │   ├── book_service
-│   │   ├── Cargo.toml
 │   │   ├── justfile
+│   │   ├── Cargo.toml
 │   │   ├── compose.yml
 │   │   ├── Dockerfile
 │   │   ├── prod.Dockerfile
 │   │   ├── src
+│   │   │   ├── lib.rs
+│   │   │   ├── state.rs
+│   │   │   ├── routes.rs
+│   │   │   ├── config.rs
+│   │   │   ├── errors.rs
+│   │   │   ├── bin
+│   │   │   │   ├── app.rs
+│   │   │   │   └── migration.rs
 │   │   │   ├── app
 │   │   │   │   ├── mod.rs
 │   │   │   │   ├── book
@@ -66,18 +74,10 @@ $~/dev/learning-rust/axum  just
 │   │   │   │   └── shared
 │   │   │   │       ├── mod.rs
 │   │   │   │       └── pagination.rs
-│   │   │   ├── bin
-│   │   │   │   ├── app.rs
-│   │   │   │   └── migration.rs
-│   │   │   ├── models
-│   │   │   │   ├── mod.rs
-│   │   │   │   ├── author.rs
-│   │   │   │   └── book.rs
-│   │   │   ├── config.rs
-│   │   │   ├── routes.rs
-│   │   │   ├── errors.rs
-│   │   │   ├── lib.rs
-│   │   │   └── state.rs
+│   │   │   └── models
+│   │   │       ├── mod.rs
+│   │   │       ├── author.rs
+│   │   │       └── book.rs
 │   │   ├── toasty
 │   │   │   ├── history.toml
 │   │   │   ├── migrations
@@ -86,7 +86,7 @@ $~/dev/learning-rust/axum  just
 │   │   │       └── 0000_snapshot.toml
 │   │   └── Toasty.toml
 │   └── README.md
-├── rustfmt.toml
 ├── justfile
+├── rustfmt.toml
 └── LICENSE
 ```
