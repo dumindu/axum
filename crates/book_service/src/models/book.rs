@@ -1,7 +1,8 @@
 use jiff::{Timestamp, civil::Date};
+use serde::Serialize;
 use uuid::Uuid;
 
-#[derive(Debug, toasty::Model)]
+#[derive(Debug, toasty::Model, Serialize)]
 pub struct Book {
     #[key]
     #[auto]

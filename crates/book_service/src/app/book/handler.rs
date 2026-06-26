@@ -7,7 +7,7 @@ use axum::{
 use tracing::{error, info};
 use uuid::Uuid;
 
-use super::payload::{BookRequest, BookResponse};
+use super::payload::BookRequest;
 use crate::{app::shared::Pagination, errors::Error, models::Book, state::AppState};
 
 pub async fn list(
@@ -20,9 +20,7 @@ pub async fn list(
             error!(target: "database", "failed to fetch: {err:?}");
             Error::DbFetch
         })?;
-
-    let response: Vec<BookResponse> = books.into_iter().map(BookResponse::from).collect();
-    Ok((StatusCode::OK, Json(response)))
+    Ok((StatusCode::OK, Json(books)))
 }
 
 pub async fn create(
@@ -44,7 +42,7 @@ pub async fn create(
 
     info!(id = %saved.id, title = %payload.title, "new book created");
 
-    Ok((StatusCode::CREATED, Json(BookResponse::from(saved))))
+    Ok((StatusCode::CREATED, Json(saved)))
 }
 
 pub async fn read(
@@ -60,7 +58,7 @@ pub async fn read(
         }
     })?;
 
-    Ok((StatusCode::OK, Json(BookResponse::from(book))))
+    Ok((StatusCode::OK, Json(book)))
 }
 
 pub async fn update(
@@ -92,7 +90,7 @@ pub async fn update(
 
     info!(id = %id, "book updated");
 
-    Ok((StatusCode::OK, Json(BookResponse::from(book))))
+    Ok((StatusCode::OK, Json(book)))
 }
 
 pub async fn delete(
