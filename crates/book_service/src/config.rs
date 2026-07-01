@@ -2,7 +2,7 @@ use envconfig::Envconfig;
 #[derive(Envconfig)]
 pub struct AppConf {
     #[envconfig(nested)]
-    pub sever: ServerConf,
+    pub server: ServerConf,
 
     #[envconfig(nested)]
     pub db: DbConf,

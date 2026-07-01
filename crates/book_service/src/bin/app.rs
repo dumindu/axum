@@ -20,10 +20,10 @@ async fn main() -> anyhow::Result<()> {
         .connect(&conf.db.to_database_url())
         .await?;
 
-    let server_conf = conf.sever.clone();
+    let server_conf = conf.server.clone();
     let state = AppState { db, server_conf };
 
-    let addr = conf.sever.to_addr();
+    let addr = conf.server.to_addr();
     info!(addr = %addr, "Starting server");
 
     let listener = tokio::net::TcpListener::bind(&addr).await?;
