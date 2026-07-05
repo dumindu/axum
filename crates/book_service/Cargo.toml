@@ -18,8 +18,11 @@ path = "src/bin/migration.rs"
 anyhow = "1.0.102"
 axum = "0.8.9"
 envconfig = "0.11.1"
+garde = { version = "0.23.0", features = ["derive", "url", "serde"] }
 jiff = { version = "0.2.28", features = ["serde"] }
 serde = "1.0.228"
+serde_json = "1.0.150"
+serde_path_to_error = "0.1.20"
 toasty = { version = "0.7.0", features = ["postgresql", "migration", "jiff", "serde"] }
 toasty-cli = "0.7.0"
 tokio = { version = "1.52.3", features = ["full"] }

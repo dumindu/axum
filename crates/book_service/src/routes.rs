@@ -2,6 +2,7 @@ use std::{str::FromStr, time::Duration};
 
 use axum::{
     Router,
+    extract::DefaultBodyLimit,
     http::{HeaderName, HeaderValue, Method, Request, Response, StatusCode},
     response::IntoResponse,
     routing::get,
@@ -32,12 +33,10 @@ pub fn init(state: AppState) -> Router {
                         .and_then(|value| value.to_str().ok())
                         .unwrap_or("unknown");
 
-                    let uri_path = request.uri().path();
-
                     info_span!(
                         "http_request",
                         method = ?request.method(),
-                        uri_path,
+                        uri_path = request.uri().path(),
                         request_id,
                         status_code = tracing::field::Empty,
                         latency = tracing::field::Empty
@@ -53,11 +52,12 @@ pub fn init(state: AppState) -> Router {
                 }),
         )
         .layer(PropagateRequestIdLayer::new(x_request_id))
-        .layer(cors_layer(state.clone()));
+        .layer(cors_layer(&state));
 
     Router::new()
         .route("/livez", get(livez))
         .nest("/v1/books", app::book::router())
+        .layer(DefaultBodyLimit::max(state.server_conf.default_body_limit))
         .layer(middleware)
         .with_state(state)
 }
@@ -66,7 +66,7 @@ async fn livez() -> impl IntoResponse {
     StatusCode::OK
 }
 
-fn cors_layer(state: AppState) -> CorsLayer {
+fn cors_layer(state: &AppState) -> CorsLayer {
     let origins: Vec<HeaderValue> = state
         .server_conf
         .allowed_origins

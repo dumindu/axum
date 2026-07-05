@@ -8,7 +8,12 @@ use tracing::{error, info};
 use uuid::Uuid;
 
 use super::payload::BookRequest;
-use crate::{app::shared::Pagination, errors::Error, models::Book, state::AppState};
+use crate::{
+    app::shared::{Pagination, ValidatedJson},
+    errors::Error,
+    models::Book,
+    state::AppState,
+};
 
 pub async fn list(
     State(mut state): State<AppState>,
@@ -25,7 +30,7 @@ pub async fn list(
 
 pub async fn create(
     State(mut state): State<AppState>,
-    Json(payload): Json<BookRequest>,
+    ValidatedJson(payload): ValidatedJson<BookRequest>,
 ) -> Result<impl IntoResponse, Error> {
     let saved = toasty::create!(Book {
         title: payload.title.clone(),

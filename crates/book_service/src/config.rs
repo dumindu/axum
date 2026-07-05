@@ -24,6 +24,8 @@ pub struct ServerConf {
     pub allowed_methods: String,
     #[envconfig(from = "SERVER_ALLOWED_HEADERS")]
     pub allowed_headers: String,
+    #[envconfig(from = "SERVER_DEFAULT_BODY_LIMIT", default = "1048576")]
+    pub default_body_limit: usize,
 }
 
 impl ServerConf {
