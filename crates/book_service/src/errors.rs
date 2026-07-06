@@ -3,6 +3,7 @@ use axum::{
     http::{HeaderValue, StatusCode, header},
     response::{IntoResponse, Response},
 };
+use utoipa::ToSchema;
 
 pub enum Error {
     DbInsert,
@@ -51,4 +52,28 @@ impl IntoResponse for Error {
 
         response
     }
+}
+
+#[derive(ToSchema)]
+#[schema(examples(r#"{"error": "DB_INSERT_FAILED"}"#))]
+pub struct ErrorResponse {
+    pub error: ErrorCode,
+}
+
+#[derive(ToSchema)]
+pub enum ErrorCode {
+    #[schema(rename = "DB_INSERT_FAILED")]
+    DbInsertFailed,
+    #[schema(rename = "DB_FETCH_FAILED")]
+    DbFetchFailed,
+    #[schema(rename = "DB_UPDATE_FAILED")]
+    DbUpdateFailed,
+    #[schema(rename = "DB_DELETE_FAILED")]
+    DbDeleteFailed,
+    #[schema(rename = "SERIALIZATION_FAILED")]
+    SerializationFailed,
+    #[schema(rename = "DESERIALIZATION_FAILED")]
+    DeserializationFailed,
+    #[schema(rename = "INVALID_RESOURCE_ID")]
+    InvalidResourceId,
 }

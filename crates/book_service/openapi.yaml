@@ -1,0 +1,285 @@
+openapi: 3.1.0
+info:
+  title: Book Service API
+  description: ''
+  license:
+    name: ''
+  version: 1.0.0
+servers:
+- url: http://localhost:3001
+  description: Development
+paths:
+  /v1/books:
+    get:
+      tags:
+      - Books
+      operationId: list
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 10
+          minimum: 0
+        example: 20
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          minimum: 0
+        example: 2
+      responses:
+        '200':
+          description: A successful list read
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+        '500':
+          description: An internal failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+      - Books
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookRequest'
+        required: true
+      responses:
+        '201':
+          description: A successful create
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: An invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '422':
+          description: An unprocessable payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '500':
+          description: An internal failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/books/{id}:
+    get:
+      tags:
+      - Books
+      operationId: read
+      parameters:
+      - name: id
+        in: path
+        description: The UUIDv7 identifier of the book
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: A successful read
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: A record could not be found
+        '500':
+          description: An internal failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+      - Books
+      operationId: update
+      parameters:
+      - name: id
+        in: path
+        description: The UUIDv7 identifier of the book
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookRequest'
+        required: true
+      responses:
+        '200':
+          description: A successful update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: An invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '404':
+          description: A record could not be found
+        '422':
+          description: An unprocessable payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '500':
+          description: An internal failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+      - Books
+      operationId: delete
+      parameters:
+      - name: id
+        in: path
+        description: The UUIDv7 identifier of the book
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: A successful delete
+        '500':
+          description: An internal failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    Book:
+      type: object
+      required:
+      - id
+      - title
+      - published_date
+      - created_at
+      - updated_at
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          examples:
+          - 2026-07-06T13:38:00Z
+        description:
+          type:
+          - string
+          - 'null'
+          examples:
+          - A description for the book.
+        id:
+          type: string
+          format: uuid
+          examples:
+          - 019f36b5-660f-7714-a9a3-e8555ba44cfc
+        image_url:
+          type:
+          - string
+          - 'null'
+          examples:
+          - https://example.com
+        published_date:
+          type: string
+          format: date
+          examples:
+          - 2026-01-31
+        title:
+          type: string
+          examples:
+          - The title of the book
+        updated_at:
+          type: string
+          format: date-time
+          examples:
+          - 2026-07-06T13:38:00Z
+    BookRequest:
+      type: object
+      required:
+      - title
+      - published_date
+      properties:
+        description:
+          type:
+          - string
+          - 'null'
+          examples:
+          - An orphaned boy discovers he is a wizard
+        image_url:
+          type:
+          - string
+          - 'null'
+          examples:
+          - https://example.com
+        published_date:
+          type: string
+          format: date
+          examples:
+          - 2026-01-31
+        title:
+          type: string
+          examples:
+          - Harry Potter and the Philosopher's Stone
+          maxLength: 255
+          minLength: 1
+    ErrorCode:
+      type: string
+      enum:
+      - DB_INSERT_FAILED
+      - DB_FETCH_FAILED
+      - DB_UPDATE_FAILED
+      - DB_DELETE_FAILED
+      - SERIALIZATION_FAILED
+      - DESERIALIZATION_FAILED
+      - INVALID_RESOURCE_ID
+    ErrorResponse:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorCode'
+      examples:
+      - '{"error": "DB_INSERT_FAILED"}'
+    ValidationErrorResponse:
+      type: object
+      required:
+      - errors
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: string
+          propertyNames:
+            type: string
+      examples:
+      - '{ "errors": { "image_url": "not a valid url", "title": "length is greater than 255" } }'

@@ -8,10 +8,14 @@ use axum::{
 };
 use garde::Validate;
 use serde::{Serialize, de::DeserializeOwned};
+use utoipa::ToSchema;
 
 use crate::AppState;
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
+#[schema(examples(
+    r#"{ "errors": { "image_url": "not a valid url", "title": "length is greater than 255" } }"#
+))]
 pub struct ValidationErrorResponse {
     pub errors: HashMap<String, String>,
 }

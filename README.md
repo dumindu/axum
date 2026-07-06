@@ -52,19 +52,22 @@ $~/dev/learning-rust/axum  just
 ├── crates
 │   ├── book_service
 │   │   ├── justfile
-│   │   ├── Cargo.toml
+│   │   ├── openapi.yaml
 │   │   ├── compose.yml
 │   │   ├── Dockerfile
 │   │   ├── prod.Dockerfile
+│   │   ├── Cargo.toml
 │   │   ├── src
 │   │   │   ├── lib.rs
 │   │   │   ├── state.rs
 │   │   │   ├── routes.rs
 │   │   │   ├── config.rs
 │   │   │   ├── errors.rs
+│   │   │   ├── openapi.rs
 │   │   │   ├── bin
 │   │   │   │   ├── app.rs
-│   │   │   │   └── migration.rs
+│   │   │   │   ├── migration.rs
+│   │   │   │   └── apidoc.rs
 │   │   │   ├── app
 │   │   │   │   ├── mod.rs
 │   │   │   │   ├── book

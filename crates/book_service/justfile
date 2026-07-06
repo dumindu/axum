@@ -41,6 +41,10 @@ app:
     DB_HOST={{ db_host }} DB_PORT={{ db_port }} SERVER_PORT={{ server_port }} \
     cargo run --bin app
 
+# Generate openapi.yaml
+apidoc:
+    cargo run --bin apidoc
+
 ## =========================================================================
 
 # Run docker commands

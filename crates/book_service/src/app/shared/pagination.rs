@@ -1,19 +1,24 @@
 use serde::Deserialize;
+use utoipa::IntoParams;
 
 const DEFAULT_PER_PAGE: usize = 10;
 const MAX_PER_PAGE: usize = 100;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, IntoParams)]
 pub struct Pagination {
     #[serde(default = "default_per_page")]
+    #[param(example = 20, default = 10)]
     pub per_page: usize,
+
     #[serde(default = "default_page")]
+    #[param(example = 2, default = 1)]
     pub page: usize,
 }
 
 fn default_per_page() -> usize {
     DEFAULT_PER_PAGE
 }
+
 fn default_page() -> usize {
     1
 }
