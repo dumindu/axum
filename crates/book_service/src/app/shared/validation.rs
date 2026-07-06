@@ -2,14 +2,14 @@ use std::collections::HashMap;
 
 use axum::{
     Json,
-    extract::{FromRequest, Request},
+    extract::{FromRef, FromRequest, Request},
     http::{StatusCode, header::CONTENT_TYPE},
     response::{IntoResponse, Response},
 };
+use garde::Validate;
 use serde::{Serialize, de::DeserializeOwned};
 
-// 20 KB defensive size ceiling configuration
-const TO_BYTES_LIMIT: usize = 20 * 1024;
+use crate::AppState;
 
 #[derive(Serialize)]
 pub struct ValidationErrorResponse {
@@ -20,16 +20,22 @@ pub struct ValidatedJson<T>(pub T);
 
 impl<S, T> FromRequest<S> for ValidatedJson<T>
 where
-    T: DeserializeOwned + garde::Validate<Context = ()>,
+    T: DeserializeOwned + Validate<Context = ()>,
     S: Send + Sync,
+    AppState: FromRef<S>,
 {
     type Rejection = Response;
 
-    async fn from_request(req: Request, _state: &S) -> Result<Self, Self::Rejection> {
+    async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
         validate_content_type(req.headers())?;
-        let bytes = read_request_body(req).await?;
+
+        let app_state = AppState::from_ref(state);
+        let bytes = read_request_body(req, app_state.server_conf.default_body_limit).await?;
+
         let value: T = deserialize_payload(&bytes)?;
+
         validate_business_rules(&value)?;
+
         Ok(ValidatedJson(value))
     }
 }
@@ -54,9 +60,12 @@ fn validate_content_type(headers: &axum::http::HeaderMap) -> Result<(), Response
     Ok(())
 }
 
-/// Step 2: Read Body (Strictly bound to 20KB)
-async fn read_request_body(req: Request) -> Result<axum::body::Bytes, Response> {
-    axum::body::to_bytes(req.into_body(), TO_BYTES_LIMIT).await.map_err(|err| {
+/// Step 2: Read Body
+async fn read_request_body(
+    req: Request,
+    body_bytes_limit: usize,
+) -> Result<axum::body::Bytes, Response> {
+    axum::body::to_bytes(req.into_body(), body_bytes_limit).await.map_err(|err| {
         let mut errors = HashMap::with_capacity(1);
         errors.insert("body".to_string(), format!("Failed to read request body: {}", err));
         (StatusCode::BAD_REQUEST, Json(ValidationErrorResponse { errors })).into_response()
@@ -85,7 +94,7 @@ fn deserialize_payload<T: DeserializeOwned>(bytes: &[u8]) -> Result<T, Response>
 /// Step 4: Validate Domain & Business Invariants
 fn validate_business_rules<T>(value: &T) -> Result<(), Response>
 where
-    T: garde::Validate<Context = ()>,
+    T: Validate<Context = ()>,
 {
     if let Err(report) = value.validate_with(&()) {
         let mut errors = HashMap::with_capacity(report.iter().count());
