@@ -57,7 +57,7 @@ pub async fn create(
     ValidatedJson(payload): ValidatedJson<BookRequest>,
 ) -> Result<impl IntoResponse, Error> {
     let saved = toasty::create!(Book {
-        title: payload.title.clone(),
+        title: payload.title,
         published_date: payload.published_date,
         image_url: payload.image_url,
         description: payload.description,
@@ -69,7 +69,7 @@ pub async fn create(
         Error::DbInsert
     })?;
 
-    info!(id = %saved.id, title = %payload.title, "new book created");
+    info!(id = %saved.id, title = %saved.title, "new book created");
 
     Ok((StatusCode::CREATED, Json(saved)))
 }
