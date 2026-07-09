@@ -2,10 +2,33 @@
 
 [![learning-rust.github.io](https://img.shields.io/github/stars/learning-rust/learning-rust.github.io?style=for-the-badge&logo=rust&label=learning-rust.github.io&labelColor=333333&color=F46623)](https://learning-rust.github.io)
 [![learning-cloud-native-go/myapp](https://img.shields.io/github/stars/learning-cloud-native-go/myapp?style=for-the-badge&logo=go&logoColor=ffffff&label=learning-cloud-native-go%2Fmyapp&labelColor=333333&color=00ADD8)](https://github.com/learning-cloud-native-go/myapp)
-[![learning-cloud-native-go.github.io](https://img.shields.io/github/stars/learning-cloud-native-go/learning-cloud-native-go.github.io?style=for-the-badge&logo=go&logoColor=ffffff&label=learning-cloud-native-go.github.io&labelColor=333333&color=00ADD8)](https://learning-cloud-native-go.github.io)
 [![E25DX](https://img.shields.io/github/stars/dumindu/E25DX?style=for-the-badge&logo=hugo&logoColor=ffffff&label=E25DX&labelColor=333333&color=FF4088)](https://themes.gohugo.io/themes/e25dx/)
 
 # Axum with Toasty ORM
+
+## Batteries Included
+
+- A Rust workspace with Just commands; to lint, build, clean, test, and run each crate.
+- Rust linters, Docker, Docker Compose, Alpine development images, and Distroless production images.
+- [Axum](https://github.com/tokio-rs/axum) async web framework skeleton with environment-based configurations.
+- Production-ready middleware including CORS, Timeout, Structured JSON logging, and Request ID tracking via [Tower](https://github.com/tower-rs/tower) components.
+- [Toasty ORM](https://github.com/tokio-rs/toasty) with PostgreSQL support to manage database migrations and type-safe queries.
+- [Garde](https://github.com/jprochazk/garde) to validate forms and requests.
+- [Utoipa](https://github.com/juhaku/utoipa) to generate OpenAPI v3 specifications.
+- [Serde](https://github.com/serde-rs/serde) to serialize and deserialize requests.
+- Modern time and date handling using [Jiff](https://github.com/BurntSushi/jiff) with full timezone and Serde integration.
+- Cryptographically secure and fast [UUIDv7](https://github.com/uuid-rs/uuid) generation for database primary keys.
+
+### Form Validation
+
+```json
+{
+  "errors": {
+    "title": "Must be at least 1 character long",
+    "image_url": "Must be a valid URL"
+  }
+}
+```
 
 ## Docker images
 
