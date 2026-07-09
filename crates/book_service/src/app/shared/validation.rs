@@ -19,7 +19,7 @@ use crate::AppState;
 
 #[derive(Serialize, ToSchema)]
 #[schema(examples(
-    r#"{ "errors": { "image_url": "not a valid url", "title": "length is greater than 255" } }"#
+    r#"{ "errors": { "image_url": "Must be a valid URL", "title": "Must be at least 1 character long" } }"#
 ))]
 pub struct ValidationErrorResponse {
     pub errors: HashMap<Cow<'static, str>, Cow<'static, str>>,
@@ -43,7 +43,7 @@ where
 
         let value: T = deserialize_payload(&bytes)?;
 
-        validate_business_rules(&value)?;
+        validate_rules(&value)?;
 
         Ok(ValidatedJson(value))
     }
@@ -51,19 +51,13 @@ where
 
 /// Step 1: Content-Type Validation
 fn validate_content_type(headers: &axum::http::HeaderMap) -> Result<(), Response> {
-    let has_json_header = headers
+    let valid = headers
         .get(CONTENT_TYPE)
         .and_then(|value| value.to_str().ok())
         .is_some_and(|ct| ct.starts_with("application/json"));
-
-    if !has_json_header {
-        let mut errors = HashMap::with_capacity(1);
-        errors.insert(
-            Cow::Borrowed("body"),
-            Cow::Borrowed("Missing required Content-Type: application/json header"),
-        );
+    if !valid {
         return Err(
-            (StatusCode::BAD_REQUEST, Json(ValidationErrorResponse { errors })).into_response()
+            (StatusCode::BAD_REQUEST, "{\"error\":\"Must be application/json\"}").into_response()
         );
     }
     Ok(())
@@ -74,35 +68,22 @@ async fn read_request_body(
     req: Request,
     body_bytes_limit: usize,
 ) -> Result<axum::body::Bytes, Response> {
-    axum::body::to_bytes(req.into_body(), body_bytes_limit).await.map_err(|err| {
-        let mut errors = HashMap::with_capacity(1);
-        errors.insert(
-            Cow::Borrowed("body"),
-            Cow::Owned(format!("Failed to read request body: {err}")),
-        );
-        (StatusCode::BAD_REQUEST, Json(ValidationErrorResponse { errors })).into_response()
-    })
+    axum::body::to_bytes(req.into_body(), body_bytes_limit)
+        .await
+        .map_err(|_| (StatusCode::BAD_REQUEST, "{\"error\":\"Malformed request\"}").into_response())
 }
 
-/// Step 3: Deserialize Payload (Supports Native Jiff Types out of the box)
+/// Step 3: Deserialize Payload
 fn deserialize_payload<T: DeserializeOwned>(bytes: &[u8]) -> Result<T, Response> {
     let deserializer = &mut serde_json::Deserializer::from_slice(bytes);
 
-    serde_path_to_error::deserialize(deserializer).map_err(|serde_err| {
-        let mut errors = HashMap::with_capacity(1);
-
-        let field_path = serde_err.path().to_string();
-        let inner_err = serde_err.into_inner();
-        let field_key =
-            if field_path.is_empty() { Cow::Borrowed("body") } else { Cow::Owned(field_path) };
-        errors.insert(field_key, Cow::Owned(inner_err.to_string()));
-
-        (StatusCode::BAD_REQUEST, Json(ValidationErrorResponse { errors })).into_response()
+    serde_path_to_error::deserialize(deserializer).map_err(|err| {
+        (StatusCode::BAD_REQUEST, format!("{{\"error\":\"{}\"}}", err)).into_response()
     })
 }
 
-/// Step 4: Validate Domain & Business Invariants
-fn validate_business_rules<T>(value: &T) -> Result<(), Response>
+/// Step 4: Validate Rules
+fn validate_rules<T>(value: &T) -> Result<(), Response>
 where
     T: Validate<Context = ()>,
 {
@@ -129,70 +110,76 @@ struct English;
 
 impl I18n for English {
     fn length_lower_than(&self, min: usize) -> Cow<'static, str> {
-        format!("This must be at least {min} characters long").into()
+        match min {
+            1 => Cow::Borrowed("Must be at least 1 character long"),
+            _ => format!("Must be at least {min} characters long").into(),
+        }
     }
 
     fn length_greater_than(&self, max: usize) -> Cow<'static, str> {
-        format!("This cannot exceed {max} characters long").into()
+        match max {
+            1 => Cow::Borrowed("Must not exceed 1 character"),
+            _ => format!("Must not exceed {max} characters").into(),
+        }
     }
 
     fn range_lower_than(&self, min: &dyn Display) -> Cow<'static, str> {
-        format!("This must be greater than or equal to {min}").into()
+        format!("Must be greater than or equal to {min}").into()
     }
 
     fn range_greater_than(&self, max: &dyn Display) -> Cow<'static, str> {
-        format!("This must be less than or equal to {max}").into()
+        format!("Must be less than or equal to {max}").into()
     }
 
     fn credit_card_invalid(&self, _reason: InvalidCreditCard) -> Cow<'static, str> {
-        Cow::Borrowed("This must be a valid credit card number")
+        Cow::Borrowed("Must be a valid credit card number")
     }
 
     fn pattern_no_match(&self, _pattern: &dyn Display) -> Cow<'static, str> {
-        Cow::Borrowed("This does not match the required format signature")
+        Cow::Borrowed("Must match the required format")
     }
 
     fn contains_missing(&self, pattern: &dyn Display) -> Cow<'static, str> {
-        format!("This must contain the pattern \"{pattern}\"").into()
+        format!("Must contain \"{pattern}\"").into()
     }
 
     fn url_invalid(&self, _reason: InvalidUrl) -> Cow<'static, str> {
-        Cow::Borrowed("This must be a valid URL")
+        Cow::Borrowed("Must be a valid URL")
     }
 
     fn prefix_missing(&self, pattern: &dyn Display) -> Cow<'static, str> {
-        format!("This must start with \"{pattern}\"").into()
+        format!("Must start with \"{pattern}\"").into()
     }
 
     fn suffix_missing(&self, pattern: &dyn Display) -> Cow<'static, str> {
-        format!("This must end with \"{pattern}\"").into()
+        format!("Must end with \"{pattern}\"").into()
     }
 
     fn phone_number_invalid(&self, _reason: InvalidPhoneNumber) -> Cow<'static, str> {
-        Cow::Borrowed("This must be a valid phone number")
+        Cow::Borrowed("Must be a valid phone number")
     }
 
     fn ip_invalid(&self, kind: IpKind) -> Cow<'static, str> {
-        format!("This must be a valid {kind} network address").into()
+        format!("Must be a valid {kind} address").into()
     }
 
     fn matches_field_mismatch(&self, field: &dyn Display) -> Cow<'static, str> {
-        format!("This must match with the {field} field").into()
+        format!("Must match the {field} field").into()
     }
 
     fn email_invalid(&self, _reason: InvalidEmail) -> Cow<'static, str> {
-        Cow::Borrowed("This must be a valid email address")
+        Cow::Borrowed("Must be a valid email address")
     }
 
     fn ascii_invalid(&self) -> Cow<'static, str> {
-        Cow::Borrowed("This must contain only valid ASCII characters")
+        Cow::Borrowed("Must contain only ASCII characters")
     }
 
     fn alphanumeric_invalid(&self) -> Cow<'static, str> {
-        Cow::Borrowed("This must contain only letters and numbers")
+        Cow::Borrowed("Must contain only letters and numbers")
     }
 
     fn required_not_set(&self) -> Cow<'static, str> {
-        Cow::Borrowed("This is a required field")
+        Cow::Borrowed("This field is required")
     }
 }

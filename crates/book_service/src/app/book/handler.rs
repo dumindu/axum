@@ -47,7 +47,7 @@ pub async fn list(
     request_body = BookRequest,
     responses(
         (status = 201, description = "A successful create", body = Book),
-        (status = 400, description = "An invalid payload", body = ValidationErrorResponse),
+        (status = 400, description = "An invalid payload", body = ErrorResponse),
         (status = 422, description = "An unprocessable payload", body = ValidationErrorResponse),
         (status = 500, description = "An internal failure", body = ErrorResponse)
     )
@@ -113,7 +113,7 @@ pub async fn read(
     ),
     responses(
         (status = 200, description = "A successful update", body = Book),
-        (status = 400, description = "An invalid payload", body = ValidationErrorResponse),
+        (status = 400, description = "An invalid payload", body = ErrorResponse),
         (status = 404, description = "A record could not be found"),
         (status = 422, description = "An unprocessable payload", body = ValidationErrorResponse),
         (status = 500, description = "An internal failure", body = ErrorResponse)
@@ -122,7 +122,7 @@ pub async fn read(
 pub async fn update(
     State(mut state): State<AppState>,
     Path(id): Path<Uuid>,
-    Json(payload): Json<BookRequest>,
+    ValidatedJson(payload): ValidatedJson<BookRequest>,
 ) -> Result<impl IntoResponse, Error> {
     let mut book = Book::get_by_id(&mut state.db, &id).await.map_err(|err| {
         if err.is_record_not_found() {

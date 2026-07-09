@@ -68,7 +68,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: An unprocessable payload
           content:
@@ -139,7 +139,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: A record could not be found
         '422':
@@ -282,4 +282,4 @@ components:
           propertyNames:
             type: string
       examples:
-      - '{ "errors": { "image_url": "not a valid url", "title": "length is greater than 255" } }'
+      - '{ "errors": { "image_url": "Must be a valid URL", "title": "Must be at least 1 character long" } }'
