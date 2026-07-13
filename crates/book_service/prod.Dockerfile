@@ -1,7 +1,12 @@
 FROM rust:1.96.0-slim AS builder
+
+RUN apt-get update && apt-get install -y \
+    build-essential mold && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /build/crates/book_service
 
 ENV CARGO_TARGET_DIR=/build/target
+ENV RUSTFLAGS="-C link-arg=-fuse-ld=mold"
 
 RUN mkdir -p /service
 
