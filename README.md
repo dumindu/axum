@@ -62,6 +62,7 @@ $~/dev/learning-rust/axum  just
     test           # Run cargo test
     migration *cmd # Run DB migrate
     app            # Run server app
+    apidoc         # Generate openapi.yaml
     docker *cmd    # Run docker commands
     build-for-prod # Build production distroless image
 ```
