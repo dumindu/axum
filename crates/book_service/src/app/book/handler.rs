@@ -61,6 +61,7 @@ pub async fn create(
         published_date: payload.published_date,
         image_url: payload.image_url,
         description: payload.description,
+        status: payload.status,
     })
     .exec(&mut state.db)
     .await
@@ -138,6 +139,7 @@ pub async fn update(
         published_date: payload.published_date,
         image_url: payload.image_url,
         description: payload.description,
+        status: payload.status,
     })
     .exec(&mut state.db)
     .await

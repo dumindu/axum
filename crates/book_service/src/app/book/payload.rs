@@ -3,6 +3,8 @@ use jiff::civil::Date;
 use serde::Deserialize;
 use utoipa::ToSchema;
 
+use crate::models::BookStatus;
+
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 pub struct BookRequest {
     #[garde(length(min = 1, max = 255))]
@@ -24,4 +26,7 @@ pub struct BookRequest {
     #[garde(skip)]
     #[schema(nullable, examples("An orphaned boy discovers he is a wizard"))]
     pub description: Option<String>,
+
+    #[garde(skip)]
+    pub status: BookStatus,
 }

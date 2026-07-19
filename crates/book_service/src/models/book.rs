@@ -1,5 +1,5 @@
 use jiff::{Timestamp, civil::Date};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
 
@@ -22,6 +22,9 @@ pub struct Book {
     #[schema(nullable, examples("A description for the book."))]
     pub description: Option<String>,
 
+    // #[column(type = u8)]
+    pub status: BookStatus,
+
     #[auto]
     #[schema(value_type = String, format = DateTime, examples("2026-07-06T13:38:00Z"))]
     pub created_at: Timestamp,
@@ -29,4 +32,13 @@ pub struct Book {
     #[auto]
     #[schema(value_type = String, format = DateTime, examples("2026-07-06T13:38:00Z"))]
     pub updated_at: Timestamp,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, toasty::Embed, Serialize, Deserialize, ToSchema)]
+#[serde(rename_all = "lowercase")]
+pub enum BookStatus {
+    #[column(variant = 0)]
+    Pending,
+    #[column(variant = 1)]
+    Verified,
 }

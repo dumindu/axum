@@ -183,6 +183,7 @@ components:
       - id
       - title
       - published_date
+      - status
       - created_at
       - updated_at
       properties:
@@ -213,6 +214,8 @@ components:
           format: date
           examples:
           - 2026-01-31
+        status:
+          $ref: '#/components/schemas/BookStatus'
         title:
           type: string
           examples:
@@ -227,6 +230,7 @@ components:
       required:
       - title
       - published_date
+      - status
       properties:
         description:
           type:
@@ -245,12 +249,19 @@ components:
           format: date
           examples:
           - 2026-01-31
+        status:
+          $ref: '#/components/schemas/BookStatus'
         title:
           type: string
           examples:
           - Harry Potter and the Philosopher's Stone
           maxLength: 255
           minLength: 1
+    BookStatus:
+      type: string
+      enum:
+      - pending
+      - verified
     ErrorCode:
       type: string
       enum:

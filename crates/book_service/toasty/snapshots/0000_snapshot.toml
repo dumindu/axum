@@ -41,12 +41,18 @@ nullable = true
 
 [[schema.tables.columns]]
 id = { table = 0, index = 5 }
+name = "status"
+ty = "I64"
+storage_ty = { Integer = 8 }
+
+[[schema.tables.columns]]
+id = { table = 0, index = 6 }
 name = "created_at"
 ty = "Timestamp"
 storage_ty = { Timestamp = 6 }
 
 [[schema.tables.columns]]
-id = { table = 0, index = 6 }
+id = { table = 0, index = 7 }
 name = "updated_at"
 ty = "Timestamp"
 storage_ty = { Timestamp = 6 }

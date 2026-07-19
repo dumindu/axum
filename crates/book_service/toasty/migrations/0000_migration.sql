@@ -4,6 +4,7 @@ CREATE TABLE "books" (
     "published_date" DATE NOT NULL,
     "image_url" TEXT,
     "description" TEXT,
+    "status" BIGINT NOT NULL,
     "created_at" TIMESTAMPTZ(6) NOT NULL,
     "updated_at" TIMESTAMPTZ(6) NOT NULL,
     PRIMARY KEY ("id")

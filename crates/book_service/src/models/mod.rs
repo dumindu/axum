@@ -2,4 +2,4 @@ mod author;
 mod book;
 
 pub use author::Author;
-pub use book::Book;
+pub use book::{Book, BookStatus};
