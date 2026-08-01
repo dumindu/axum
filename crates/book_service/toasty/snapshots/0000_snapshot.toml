@@ -34,8 +34,8 @@ storage_ty = "Date"
 [[schema.tables.columns]]
 id = { table = 0, index = 4 }
 name = "status"
-ty = "I64"
-storage_ty = { Integer = 8 }
+ty = "U8"
+storage_ty = { UnsignedInteger = 1 }
 
 [[schema.tables.columns]]
 id = { table = 0, index = 5 }

@@ -36,6 +36,7 @@ pub struct Book {
 
 #[derive(Debug, Clone, Copy, PartialEq, toasty::Embed, Serialize, Deserialize, ToSchema)]
 #[serde(rename_all = "lowercase")]
+#[column(type = u8)]
 pub enum BookStatus {
     #[column(variant = 0)]
     Pending,

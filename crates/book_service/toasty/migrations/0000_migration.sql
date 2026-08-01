@@ -3,7 +3,7 @@ CREATE TABLE "books" (
     "created_at" TIMESTAMPTZ(6) NOT NULL,
     "updated_at" TIMESTAMPTZ(6) NOT NULL,
     "published_date" DATE NOT NULL,
-    "status" BIGINT NOT NULL,
+    "status" SMALLINT NOT NULL,
     "title" TEXT NOT NULL,
     "image_url" TEXT,
     "description" TEXT,
