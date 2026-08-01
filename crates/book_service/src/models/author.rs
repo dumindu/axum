@@ -7,12 +7,12 @@ pub struct Author {
     #[auto]
     pub id: Uuid,
 
-    pub name: String,
-    pub description: Option<String>,
-
     #[auto]
     pub created_at: Timestamp,
 
     #[auto]
     pub updated_at: Timestamp,
+
+    pub name: String,
+    pub description: Option<String>,
 }

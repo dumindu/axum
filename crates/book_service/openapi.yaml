@@ -181,11 +181,11 @@ components:
       type: object
       required:
       - id
-      - title
-      - published_date
-      - status
       - created_at
       - updated_at
+      - published_date
+      - status
+      - title
       properties:
         created_at:
           type: string

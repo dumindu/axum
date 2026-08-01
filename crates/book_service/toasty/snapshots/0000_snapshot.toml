@@ -15,47 +15,47 @@ storage_ty = "Uuid"
 
 [[schema.tables.columns]]
 id = { table = 0, index = 1 }
-name = "title"
-ty = "String"
-storage_ty = "Text"
+name = "created_at"
+ty = "Timestamp"
+storage_ty = { Timestamp = 6 }
 
 [[schema.tables.columns]]
 id = { table = 0, index = 2 }
+name = "updated_at"
+ty = "Timestamp"
+storage_ty = { Timestamp = 6 }
+
+[[schema.tables.columns]]
+id = { table = 0, index = 3 }
 name = "published_date"
 ty = "Date"
 storage_ty = "Date"
 
 [[schema.tables.columns]]
-id = { table = 0, index = 3 }
+id = { table = 0, index = 4 }
+name = "status"
+ty = "I64"
+storage_ty = { Integer = 8 }
+
+[[schema.tables.columns]]
+id = { table = 0, index = 5 }
+name = "title"
+ty = "String"
+storage_ty = "Text"
+
+[[schema.tables.columns]]
+id = { table = 0, index = 6 }
 name = "image_url"
 ty = "String"
 storage_ty = "Text"
 nullable = true
 
 [[schema.tables.columns]]
-id = { table = 0, index = 4 }
+id = { table = 0, index = 7 }
 name = "description"
 ty = "String"
 storage_ty = "Text"
 nullable = true
-
-[[schema.tables.columns]]
-id = { table = 0, index = 5 }
-name = "status"
-ty = "I64"
-storage_ty = { Integer = 8 }
-
-[[schema.tables.columns]]
-id = { table = 0, index = 6 }
-name = "created_at"
-ty = "Timestamp"
-storage_ty = { Timestamp = 6 }
-
-[[schema.tables.columns]]
-id = { table = 0, index = 7 }
-name = "updated_at"
-ty = "Timestamp"
-storage_ty = { Timestamp = 6 }
 
 [[schema.tables.indices]]
 id = { table = 0, index = 0 }
@@ -78,28 +78,28 @@ storage_ty = "Uuid"
 
 [[schema.tables.columns]]
 id = { table = 1, index = 1 }
-name = "name"
-ty = "String"
-storage_ty = "Text"
-
-[[schema.tables.columns]]
-id = { table = 1, index = 2 }
-name = "description"
-ty = "String"
-storage_ty = "Text"
-nullable = true
-
-[[schema.tables.columns]]
-id = { table = 1, index = 3 }
 name = "created_at"
 ty = "Timestamp"
 storage_ty = { Timestamp = 6 }
 
 [[schema.tables.columns]]
-id = { table = 1, index = 4 }
+id = { table = 1, index = 2 }
 name = "updated_at"
 ty = "Timestamp"
 storage_ty = { Timestamp = 6 }
+
+[[schema.tables.columns]]
+id = { table = 1, index = 3 }
+name = "name"
+ty = "String"
+storage_ty = "Text"
+
+[[schema.tables.columns]]
+id = { table = 1, index = 4 }
+name = "description"
+ty = "String"
+storage_ty = "Text"
+nullable = true
 
 [[schema.tables.indices]]
 id = { table = 1, index = 0 }
