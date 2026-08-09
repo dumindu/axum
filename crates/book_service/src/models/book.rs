@@ -6,32 +6,32 @@ use uuid::Uuid;
 #[derive(Debug, toasty::Model, Serialize, ToSchema)]
 pub struct Book {
     // Initial order for postgres columns by alignment(16-byte, 8-byte, 4-byte, 2-byte, 1-byte, then variable-length types)
-    #[key]
     #[auto]
-    #[schema(value_type = String, format = Uuid, examples("019f36b5-660f-7714-a9a3-e8555ba44cfc"))]
-    pub id: Uuid,
-
-    #[auto]
-    #[schema(value_type = String, format = DateTime, examples("2026-07-06T13:38:00Z"))]
+    #[schema(value_type = String, format = DateTime, examples("2027-01-01T00:00:00.123456Z"))]
     pub created_at: Timestamp,
 
     #[auto]
-    #[schema(value_type = String, format = DateTime, examples("2026-07-06T13:38:00Z"))]
+    #[schema(value_type = String, format = DateTime, examples("2027-01-01T00:00:00.123456Z"))]
     pub updated_at: Timestamp,
 
-    #[schema(value_type = String, format = Date, examples("2026-01-31"))]
+    #[key]
+    #[auto]
+    #[schema(value_type = String, format = Uuid, examples("01bbbbbb-bbbb-7bbb-8bbb-bbbbbbbbbbbb"))]
+    pub id: Uuid,
+
+    #[schema(value_type = String, format = Date, examples("2007-07-21"))]
     pub published_date: Date,
 
     pub status: BookStatus,
 
-    #[schema(examples("The title of the book"))]
+    #[schema(examples("Harry Potter and the Deathly Hallows"))]
     pub title: String,
 
-    #[schema(nullable, examples("https://example.com"))]
-    pub image_url: Option<String>,
-
-    #[schema(nullable, examples("A description for the book."))]
+    #[schema(nullable, examples("It is the seventh and final novel in the Harry Potter series"))]
     pub description: Option<String>,
+
+    #[schema(nullable, examples("https://upload.wikimedia.org/wikipedia/en/a/a9/Harry_Potter_and_the_Deathly_Hallows.jpg"))]
+    pub image_url: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, toasty::Embed, Serialize, Deserialize, ToSchema)]

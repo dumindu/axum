@@ -22,7 +22,7 @@ paths:
           type: integer
           default: 10
           minimum: 0
-        example: 20
+        example: 10
       - name: page
         in: query
         required: false
@@ -30,7 +30,7 @@ paths:
           type: integer
           default: 1
           minimum: 0
-        example: 2
+        example: 1
       responses:
         '200':
           description: A successful list read
@@ -180,9 +180,9 @@ components:
     Book:
       type: object
       required:
-      - id
       - created_at
       - updated_at
+      - id
       - published_date
       - status
       - title
@@ -191,40 +191,40 @@ components:
           type: string
           format: date-time
           examples:
-          - 2026-07-06T13:38:00Z
+          - 2027-01-01T00:00:00.123456Z
         description:
           type:
           - string
           - 'null'
           examples:
-          - A description for the book.
+          - It is the seventh and final novel in the Harry Potter series
         id:
           type: string
           format: uuid
           examples:
-          - 019f36b5-660f-7714-a9a3-e8555ba44cfc
+          - 01bbbbbb-bbbb-7bbb-8bbb-bbbbbbbbbbbb
         image_url:
           type:
           - string
           - 'null'
           examples:
-          - https://example.com
+          - https://upload.wikimedia.org/wikipedia/en/a/a9/Harry_Potter_and_the_Deathly_Hallows.jpg
         published_date:
           type: string
           format: date
           examples:
-          - 2026-01-31
+          - 2007-07-21
         status:
           $ref: '#/components/schemas/BookStatus'
         title:
           type: string
           examples:
-          - The title of the book
+          - Harry Potter and the Deathly Hallows
         updated_at:
           type: string
           format: date-time
           examples:
-          - 2026-07-06T13:38:00Z
+          - 2027-01-01T00:00:00.123456Z
     BookRequest:
       type: object
       required:
@@ -237,24 +237,24 @@ components:
           - string
           - 'null'
           examples:
-          - An orphaned boy discovers he is a wizard
+          - It is the seventh and final novel in the Harry Potter series
         image_url:
           type:
           - string
           - 'null'
           examples:
-          - https://example.com
+          - https://upload.wikimedia.org/wikipedia/en/a/a9/Harry_Potter_and_the_Deathly_Hallows.jpg
         published_date:
           type: string
           format: date
           examples:
-          - 2026-01-31
+          - 2007-07-21
         status:
           $ref: '#/components/schemas/BookStatus'
         title:
           type: string
           examples:
-          - Harry Potter and the Philosopher's Stone
+          - Harry Potter and the Deathly Hallows
           maxLength: 255
           minLength: 1
     BookStatus:

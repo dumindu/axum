@@ -7,11 +7,11 @@ const MAX_PER_PAGE: usize = 100;
 #[derive(Debug, Clone, Deserialize, IntoParams)]
 pub struct Pagination {
     #[serde(default = "default_per_page")]
-    #[param(example = 20, default = 10)]
+    #[param(default = 10, example = 10)]
     pub per_page: usize,
 
     #[serde(default = "default_page")]
-    #[param(example = 2, default = 1)]
+    #[param(default = 1, example = 1)]
     pub page: usize,
 }
 
