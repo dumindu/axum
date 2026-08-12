@@ -1,12 +1,16 @@
-FROM rust:1.96.0-slim AS builder
+FROM rust:1.97-slim AS builder
 
-RUN apt-get update && apt-get install -y \
-    build-essential mold && rm -rf /var/lib/apt/lists/*
+ARG CARGO_BUILD_TARGET=aarch64-unknown-linux-musl
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential musl-tools && rm -rf /var/lib/apt/lists/*
+
+RUN rustup target add ${CARGO_BUILD_TARGET}
 
 WORKDIR /build/crates/book_service
 
-ENV CARGO_TARGET_DIR=/build/target
-ENV RUSTFLAGS="-C link-arg=-fuse-ld=mold"
+ENV CARGO_TARGET_DIR=/build/target \
+    CARGO_BUILD_TARGET=${CARGO_BUILD_TARGET}
 
 RUN mkdir -p /service
 
@@ -21,14 +25,14 @@ RUN --mount=type=bind,source=src,target=src \
     <<EOF
 set -e
 cargo build --locked --release
-cp /build/target/release/app /service/app
-cp /build/target/release/migration /service/migration
+cp /build/target/${CARGO_BUILD_TARGET}/release/app /service/app
+cp /build/target/${CARGO_BUILD_TARGET}/release/migration /service/migration
 cp -r ./toasty /service/toasty/
 cp ./Toasty.toml /service/Toasty.toml
 EOF
 
 # ==============================================================================
-FROM gcr.io/distroless/cc-debian13:nonroot
+FROM gcr.io/distroless/static-debian13:nonroot
 WORKDIR /service
 
 COPY --from=builder /service/app /service/app

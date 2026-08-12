@@ -32,13 +32,13 @@
 
 ## Docker images
 
-- dev: rust:1.96.0 slim
-- prod: distroless cc-debian13:nonroot
+- dev: Rust 1.97-slim and Postgres 18-alpine
+- prod: Distroless/static-debian13:nonroot
 
 | Environment    | Rust Image Size | Postgres Image Size |
 |----------------|-----------------|---------------------|
-| Development    | 900 MB          | 300MB               |
-| Production     | 70 MB           |                     |
+| Development    | ~ 900 MB        | ~ 300MB             |
+| Production     | ~ 30 MB         |                     |
 
 ## Just commands
 
