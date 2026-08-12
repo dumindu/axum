@@ -5,7 +5,6 @@ use uuid::Uuid;
 
 #[derive(Debug, toasty::Model, Serialize, ToSchema)]
 pub struct Book {
-    // Initial order for postgres columns by alignment(16-byte, 8-byte, 4-byte, 2-byte, 1-byte, then variable-length types)
     #[auto]
     #[schema(value_type = String, format = DateTime, examples("2027-01-01T00:00:00.123456Z"))]
     pub created_at: Timestamp,
