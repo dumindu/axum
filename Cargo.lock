@@ -424,6 +424,7 @@ dependencies = [
  "envconfig",
  "garde",
  "jiff",
+ "mimalloc",
  "serde",
  "serde_json",
  "serde_path_to_error",

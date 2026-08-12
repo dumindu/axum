@@ -1,6 +1,11 @@
 use book_service::{AppConf, AppState, routes};
+
+use mimalloc::MiMalloc;
 use tracing::info;
 use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
+
+#[global_allocator]
+static GLOBAL: MiMalloc = MiMalloc;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

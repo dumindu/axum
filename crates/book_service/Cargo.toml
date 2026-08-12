@@ -6,6 +6,12 @@ edition = "2024"
 [lints]
 workspace = true
 
+[profile.release]
+opt-level = 3
+strip = true
+lto = true
+codegen-units = 1
+
 [[bin]]
 name = "app"
 path = "src/bin/app.rs"
@@ -24,6 +30,7 @@ axum = "0.8.9"
 envconfig = "0.11.1"
 garde = { version = "0.23.0", features = ["derive", "url", "serde"] }
 jiff = { version = "0.2.35", features = ["serde"] }
+mimalloc = "0.1.52"
 serde = "1.0.229"
 serde_json = "1.0.151"
 serde_path_to_error = "0.1.20"
