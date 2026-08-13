@@ -1,5 +1,4 @@
 use book_service::{AppConf, AppState, routes};
-
 use mimalloc::MiMalloc;
 use tracing::info;
 use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
@@ -25,10 +24,10 @@ async fn main() -> anyhow::Result<()> {
         .connect(&conf.db.to_database_url())
         .await?;
 
-    let server_conf = conf.server.clone();
+    let addr = conf.server.to_addr();
+    let server_conf = conf.server;
     let state = AppState { db, server_conf };
 
-    let addr = conf.server.to_addr();
     info!(addr = %addr, "Starting server");
 
     let listener = tokio::net::TcpListener::bind(&addr).await?;
