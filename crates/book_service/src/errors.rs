@@ -5,14 +5,24 @@ use axum::{
 };
 use utoipa::ToSchema;
 
+#[derive(ToSchema)]
+#[schema(examples(r#"{"error": "DB_FETCH_FAILED"}"#))]
+pub struct ErrorResponse {
+    #[expect(dead_code, reason = "OpenAPI YAML")]
+    pub error: Error,
+}
+
+#[derive(ToSchema)]
 pub enum Error {
+    #[schema(rename = "DB_INSERT_FAILED")]
     DbInsert,
+    #[schema(rename = "DB_FETCH_FAILED")]
     DbFetch,
+    #[schema(rename = "DB_UPDATE_FAILED")]
     DbUpdate,
+    #[schema(rename = "DB_DELETE_FAILED")]
     DbDelete,
-    Serialization,
-    Deserialization,
-    InvalidResourceId,
+    #[serde(skip)]
     NotFound,
 }
 
@@ -31,16 +41,6 @@ impl IntoResponse for Error {
             Error::DbDelete => {
                 (StatusCode::INTERNAL_SERVER_ERROR, b"{\"error\": \"DB_DELETE_FAILED\"}")
             }
-            Error::Serialization => {
-                (StatusCode::INTERNAL_SERVER_ERROR, b"{\"error\": \"SERIALIZATION_FAILED\"}")
-            }
-
-            Error::Deserialization => {
-                (StatusCode::BAD_REQUEST, b"{\"error\": \"DESERIALIZATION_FAILED\"}")
-            }
-            Error::InvalidResourceId => {
-                (StatusCode::BAD_REQUEST, b"{\"error\": \"INVALID_RESOURCE_ID\"}")
-            }
             Error::NotFound => (StatusCode::NOT_FOUND, b""),
         };
 
@@ -52,28 +52,4 @@ impl IntoResponse for Error {
 
         response
     }
-}
-
-#[derive(ToSchema)]
-#[schema(examples(r#"{"error": "DB_INSERT_FAILED"}"#))]
-pub struct ErrorResponse {
-    pub error: ErrorCode,
-}
-
-#[derive(ToSchema)]
-pub enum ErrorCode {
-    #[schema(rename = "DB_INSERT_FAILED")]
-    DbInsertFailed,
-    #[schema(rename = "DB_FETCH_FAILED")]
-    DbFetchFailed,
-    #[schema(rename = "DB_UPDATE_FAILED")]
-    DbUpdateFailed,
-    #[schema(rename = "DB_DELETE_FAILED")]
-    DbDeleteFailed,
-    #[schema(rename = "SERIALIZATION_FAILED")]
-    SerializationFailed,
-    #[schema(rename = "DESERIALIZATION_FAILED")]
-    DeserializationFailed,
-    #[schema(rename = "INVALID_RESOURCE_ID")]
-    InvalidResourceId,
 }

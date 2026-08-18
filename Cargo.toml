@@ -24,3 +24,9 @@ ref_as_ptr = "warn"
 
 allow_attributes = "warn"
 allow_attributes_without_reason = "warn"
+
+[profile.release]
+opt-level = 3
+strip = true
+lto = true
+codegen-units = 1

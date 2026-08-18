@@ -14,7 +14,7 @@ use utoipa::{OpenApi, openapi::OpenApi as OpenApiDoc};
 )]
 pub struct ApiDoc;
 
-pub fn generate_doc() -> OpenApiDoc {
+pub fn build_api_doc() -> OpenApiDoc {
     let mut openapi = ApiDoc::openapi();
     openapi.merge(crate::app::book::BookApi::openapi());
     openapi

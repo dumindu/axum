@@ -1,9 +1,9 @@
 use std::{fs::File, io::Write, path::PathBuf};
 
-use book_service::openapi::generate_doc;
+use book_service::build_api_doc;
 
 fn main() {
-    let yaml = generate_doc().to_yaml().expect("Failed to generate OpenAPI YAML");
+    let yaml = build_api_doc().to_yaml().expect("Failed to generate OpenAPI YAML");
 
     let mut crate_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     crate_path.push("openapi.yaml");

@@ -262,25 +262,22 @@ components:
       enum:
       - pending
       - verified
-    ErrorCode:
+    Error:
       type: string
       enum:
       - DB_INSERT_FAILED
       - DB_FETCH_FAILED
       - DB_UPDATE_FAILED
       - DB_DELETE_FAILED
-      - SERIALIZATION_FAILED
-      - DESERIALIZATION_FAILED
-      - INVALID_RESOURCE_ID
     ErrorResponse:
       type: object
       required:
       - error
       properties:
         error:
-          $ref: '#/components/schemas/ErrorCode'
+          $ref: '#/components/schemas/Error'
       examples:
-      - '{"error": "DB_INSERT_FAILED"}'
+      - '{"error": "DB_FETCH_FAILED"}'
     ValidationErrorResponse:
       type: object
       required:

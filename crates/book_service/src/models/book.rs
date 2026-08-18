@@ -6,19 +6,19 @@ use uuid::Uuid;
 #[derive(Debug, toasty::Model, Serialize, ToSchema)]
 pub struct Book {
     #[auto]
-    #[schema(value_type = String, format = DateTime, examples("2027-01-01T00:00:00.123456Z"))]
+    #[schema(examples("2027-01-01T00:00:00.123456Z"))]
     pub created_at: Timestamp,
 
     #[auto]
-    #[schema(value_type = String, format = DateTime, examples("2027-01-01T00:00:00.123456Z"))]
+    #[schema(examples("2027-01-01T00:00:00.123456Z"))]
     pub updated_at: Timestamp,
 
     #[key]
     #[auto]
-    #[schema(value_type = String, format = Uuid, examples("01bbbbbb-bbbb-7bbb-8bbb-bbbbbbbbbbbb"))]
+    #[schema(examples("01bbbbbb-bbbb-7bbb-8bbb-bbbbbbbbbbbb"))]
     pub id: Uuid,
 
-    #[schema(value_type = String, format = Date, examples("2007-07-21"))]
+    #[schema(examples("2007-07-21"))]
     pub published_date: Date,
 
     pub status: BookStatus,
@@ -26,10 +26,12 @@ pub struct Book {
     #[schema(examples("Harry Potter and the Deathly Hallows"))]
     pub title: String,
 
-    #[schema(nullable, examples("It is the seventh and final novel in the Harry Potter series"))]
+    #[schema(examples("It is the seventh and final novel in the Harry Potter series"))]
     pub description: Option<String>,
 
-    #[schema(nullable, examples("https://upload.wikimedia.org/wikipedia/en/a/a9/Harry_Potter_and_the_Deathly_Hallows.jpg"))]
+    #[schema(examples(
+        "https://upload.wikimedia.org/wikipedia/en/a/a9/Harry_Potter_and_the_Deathly_Hallows.jpg"
+    ))]
     pub image_url: Option<String>,
 }
 

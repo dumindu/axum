@@ -29,17 +29,17 @@ clean:
 test:
     cargo test
 
-# Run DB migrate
-migration *cmd:
-    @export $(grep -v '^#' .env | xargs) && \
-    DB_HOST={{ db_host }} DB_PORT={{ db_port }} \
-    cargo run --bin migration -- migration {{cmd}}
-
 # Run server app
 app:
     @export $(grep -v '^#' .env | xargs) && \
     DB_HOST={{ db_host }} DB_PORT={{ db_port }} SERVER_PORT={{ server_port }} \
     cargo run --bin app
+
+# Run DB migration CLI
+migration *cmd:
+    @export $(grep -v '^#' .env | xargs) && \
+    DB_HOST={{ db_host }} DB_PORT={{ db_port }} \
+    cargo run --bin migration -- migration {{cmd}}
 
 # Generate openapi.yaml
 apidoc:
@@ -49,7 +49,7 @@ apidoc:
 
 # Run docker commands
 docker *cmd:
-    docker {{cmd}}
+    docker {{ cmd }}
 
 # Build production distroless image
 build-for-prod:

@@ -1,11 +1,10 @@
+mod handler;
+mod payload;
+
 use axum::{Router, routing::get};
 use utoipa::OpenApi;
 
 use crate::state::AppState;
-mod handler;
-mod payload;
-
-pub use payload::BookRequest;
 
 pub fn router() -> Router<AppState> {
     Router::new()
@@ -16,6 +15,6 @@ pub fn router() -> Router<AppState> {
 #[derive(OpenApi)]
 #[openapi(
     paths(handler::list, handler::create, handler::read, handler::update, handler::delete),
-    components(schemas(self::BookRequest))
+    components(schemas(payload::BookRequest))
 )]
 pub struct BookApi;

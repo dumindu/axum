@@ -2,12 +2,12 @@ use std::{borrow::Cow, collections::HashMap, fmt::Display};
 
 use axum::{
     Json,
-    extract::{FromRef, FromRequest, Request},
-    http::{StatusCode, header::CONTENT_TYPE},
+    extract::{FromRequest, Request, rejection::JsonRejection},
+    http::StatusCode,
     response::{IntoResponse, Response},
 };
 use garde::{
-    Validate,
+    Report, Validate,
     i18n::{
         I18n, InvalidCreditCard, InvalidEmail, InvalidPhoneNumber, InvalidUrl, IpKind, with_i18n,
     },
@@ -15,95 +15,67 @@ use garde::{
 use serde::{Serialize, de::DeserializeOwned};
 use utoipa::ToSchema;
 
-use crate::AppState;
-
-#[derive(Serialize, ToSchema)]
-#[schema(examples(
-    r#"{ "errors": { "image_url": "Must be a valid URL", "title": "Must be at least 1 character long" } }"#
-))]
-pub struct ValidationErrorResponse {
-    pub errors: HashMap<Cow<'static, str>, Cow<'static, str>>,
-}
-
+#[derive(Debug, Clone, Copy, Default)]
 pub struct ValidatedJson<T>(pub T);
 
 impl<S, T> FromRequest<S> for ValidatedJson<T>
 where
     T: DeserializeOwned + Validate<Context = ()>,
     S: Send + Sync,
-    AppState: FromRef<S>,
+    Json<T>: FromRequest<S, Rejection = JsonRejection>,
 {
-    type Rejection = Response;
+    type Rejection = ServerError;
 
     async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
-        validate_content_type(req.headers())?;
-
-        let app_state = AppState::from_ref(state);
-        let bytes = read_request_body(req, app_state.server_conf.default_body_limit).await?;
-
-        let value: T = deserialize_payload(&bytes)?;
-
-        validate_rules(&value)?;
-
+        let Json(value) = Json::<T>::from_request(req, state).await?;
+        with_i18n(English, || value.validate())?;
         Ok(ValidatedJson(value))
     }
 }
 
-/// Step 1: Content-Type Validation
-fn validate_content_type(headers: &axum::http::HeaderMap) -> Result<(), Response> {
-    let valid = headers
-        .get(CONTENT_TYPE)
-        .and_then(|value| value.to_str().ok())
-        .is_some_and(|ct| ct.starts_with("application/json"));
-    if !valid {
-        return Err(
-            (StatusCode::BAD_REQUEST, "{\"error\":\"Must be application/json\"}").into_response()
-        );
+#[derive(Serialize, ToSchema)]
+#[schema(examples(
+    r#"{ "errors": { "image_url": "Must be a valid URL", "title": "Must be at least 1 character long" } }"#
+))]
+pub struct ValidationErrorResponse {
+    pub errors: HashMap<String, String>,
+}
+
+#[derive(Debug)]
+pub enum ServerError {
+    ValidationError(Report),
+    AxumJsonRejection(JsonRejection),
+}
+
+impl From<Report> for ServerError {
+    fn from(err: Report) -> Self {
+        Self::ValidationError(err)
     }
-    Ok(())
 }
 
-/// Step 2: Read Body
-async fn read_request_body(
-    req: Request,
-    body_bytes_limit: usize,
-) -> Result<axum::body::Bytes, Response> {
-    axum::body::to_bytes(req.into_body(), body_bytes_limit)
-        .await
-        .map_err(|_| (StatusCode::BAD_REQUEST, "{\"error\":\"Malformed request\"}").into_response())
+impl From<JsonRejection> for ServerError {
+    fn from(err: JsonRejection) -> Self {
+        Self::AxumJsonRejection(err)
+    }
 }
 
-/// Step 3: Deserialize Payload
-fn deserialize_payload<T: DeserializeOwned>(bytes: &[u8]) -> Result<T, Response> {
-    let deserializer = &mut serde_json::Deserializer::from_slice(bytes);
+impl IntoResponse for ServerError {
+    fn into_response(self) -> Response {
+        match self {
+            Self::ValidationError(report) => {
+                let errors = report
+                    .iter()
+                    .map(|(path, error)| (path.to_string(), error.message().to_string()))
+                    .collect::<HashMap<_, _>>();
 
-    serde_path_to_error::deserialize(deserializer).map_err(|err| {
-        (StatusCode::BAD_REQUEST, format!("{{\"error\":\"{}\"}}", err)).into_response()
-    })
-}
-
-/// Step 4: Validate Rules
-fn validate_rules<T>(value: &T) -> Result<(), Response>
-where
-    T: Validate<Context = ()>,
-{
-    if let Err(report) = with_i18n(English, || value.validate()) {
-        let mut errors = HashMap::with_capacity(report.iter().count());
-
-        for (path, error) in report.iter() {
-            let message = if !error.message().is_empty() {
-                Cow::Owned(error.message().to_string())
-            } else {
-                Cow::Borrowed("Invalid field value")
-            };
-
-            errors.insert(Cow::Owned(path.to_string()), message);
+                (StatusCode::UNPROCESSABLE_ENTITY, Json(ValidationErrorResponse { errors }))
+                    .into_response()
+            }
+            Self::AxumJsonRejection(rejection) => {
+                (StatusCode::BAD_REQUEST, rejection).into_response()
+            }
         }
-
-        return Err((StatusCode::UNPROCESSABLE_ENTITY, Json(ValidationErrorResponse { errors }))
-            .into_response());
     }
-    Ok(())
 }
 
 struct English;

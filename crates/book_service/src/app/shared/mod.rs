@@ -2,4 +2,4 @@ mod pagination;
 mod validation;
 
 pub use pagination::Pagination;
-pub use validation::*;
+pub use validation::{ValidatedJson, ValidationErrorResponse};

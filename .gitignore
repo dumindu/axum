@@ -1,6 +1,5 @@
+target/
+.DS_Store
 .idea
 .zed
 .vscode
-.DS_Store
-
-target

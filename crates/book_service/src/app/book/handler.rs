@@ -58,9 +58,9 @@ pub async fn create(
 ) -> Result<impl IntoResponse, Error> {
     let saved = toasty::create!(Book {
         title: payload.title,
-        published_date: payload.published_date,
-        image_url: payload.image_url,
         description: payload.description,
+        image_url: payload.image_url,
+        published_date: payload.published_date,
         status: payload.status,
     })
     .exec(&mut state.db)
@@ -136,9 +136,9 @@ pub async fn update(
 
     toasty::update!(book {
         title: payload.title,
-        published_date: payload.published_date,
-        image_url: payload.image_url,
         description: payload.description,
+        image_url: payload.image_url,
+        published_date: payload.published_date,
         status: payload.status,
     })
     .exec(&mut state.db)
