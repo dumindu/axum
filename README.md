@@ -19,31 +19,10 @@
 - Modern time and date handling using [Jiff](https://github.com/BurntSushi/jiff) with full timezone and Serde integration.
 - Cryptographically secure and fast [UUIDv7](https://github.com/uuid-rs/uuid) generation for database primary keys.
 
-### Form Validation
-
-```json
-{
-  "errors": {
-    "title": "Must be at least 1 character long",
-    "image_url": "Must be a valid URL"
-  }
-}
-```
-
-## Docker images
-
-- dev: Rust 1.97-slim and Postgres 18-alpine
-- prod: Distroless/static-debian13:nonroot
-
-| Environment    | Rust Image Size | Postgres Image Size |
-|----------------|-----------------|---------------------|
-| Development    | ~ 900 MB        | ~ 300MB             |
-| Production     | ~ 30 MB         |                     |
-
 ## Just commands
 
-```just
-$~/dev/learning-rust/axum  just
+```justfile
+$just
 🚀AXUM
   help     # List available commands
   lint     # Run lints on the workspace members (cargo fmt and clippy)
@@ -67,27 +46,89 @@ $~/dev/learning-rust/axum  just
     build-for-prod # Build production distroless image
 ```
 
-## Project structure
+## Database Design
+
+To keep this simple, we use only a single database table named `books`.
+
+| Column Name    | Datatype    | Not Null | Primary Key |
+|----------------|-------------|----------|-------------|
+| created_at     | TIMESTAMPTZ | ✅       |             |
+| updated_at     | TIMESTAMPTZ | ✅       |             |
+| id             | UUID        | ✅       | ✅          |
+| published_date | DATE        | ✅       |             |
+| status         | SMALLINT    | ✅       |             |
+| title          | TEXT        | ✅       |             |
+| description    | TEXT        |          |             |
+| image_url      | TEXT        |          |             |
+
+> [!important]
+> - For high-traffic systems with very large PostgreSQL tables that containing millions/billions of rows, arranging fixed-width columns by decreasing alignment requirements can reduce tuple alignment padding; potentially minimize row/ storage size. This technique is called "**Column Tetris**".
+> - For this optimization, order fixed-width table columns by decreasing alignment requirements.
+>   - 8-byte alignment types: `bigint`, `bigserial`, `double precision`/ `float8`, `timestamp`, `timestamptz`, `time`, `interval`
+>   - 4-byte alignment types: `integer`, `serial`, `real`/ `float4`, `uuid`, `date`
+>   - 2-byte alignment types: `smallint`, `smallserial`
+>   - 1-byte alignment types: `boolean`
+>   - Variable-width types (at last): `numeric`, `text`, `character varying`/ `varchar`, `bytea`
+> - However, it's ok to follow a more readable column format, when your table schema changes frequently.
+
+## Endpoints
+
+| Name        | HTTP Method | Route          |
+|-------------|-------------|----------------|
+| List Books  | GET         | /v1/books      |
+| Create Book | POST        | /v1/books      |
+| Read Book   | GET         | /v1/books/{id} |
+| Update Book | PUT         | /v1/books/{id} |
+| Delete Book | DELETE      | /v1/books/{id} |
+| Health      | GET         | /livez         |
+
+### Request (`POST`/`PUT`)
+
+```json
+{
+  "title": "Harry Potter and the Deathly Hallows",
+  "description": "It is the seventh and final novel in the Harry Potter series",
+  "image_url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Harry_Potter_and_the_Deathly_Hallows.jpg",
+  "published_date": "2007-07-21",
+  "status": "verified"
+}
+```
+
+### Response (`GET`/`POST`/`PUT`)
+```json
+{
+  "created_at": "2027-01-01T00:00:00.123456Z",
+  "updated_at": "2027-01-01T00:00:00.123456Z",
+  "id": "01bbbbbb-bbbb-7bbb-8bbb-bbbbbbbbbbbb",
+  "published_date": "2007-07-21",
+  "status": "verified",
+  "title": "Harry Potter and the Deathly Hallows",
+  "description": "It is the seventh and final novel in the Harry Potter series",
+  "image_url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Harry_Potter_and_the_Deathly_Hallows.jpg"
+}
+```
+
+> [!note]
+> The list endpoint returns an array of above response JSON.
+
+## Form Validation
+
+```json
+{
+  "errors": {
+    "title": "Must be at least 1 character long",
+    "image_url": "Must be a valid URL"
+  }
+}
+```
+
+## Project Structure
 
 ```shell
-.
-├── Cargo.toml
-├── Cargo.lock
+rest_api_workspace
 ├── crates
 │   ├── book_service
-│   │   ├── justfile
-│   │   ├── openapi.yaml
-│   │   ├── compose.yml
-│   │   ├── Dockerfile
-│   │   ├── prod.Dockerfile
-│   │   ├── Cargo.toml
 │   │   ├── src
-│   │   │   ├── lib.rs
-│   │   │   ├── state.rs
-│   │   │   ├── routes.rs
-│   │   │   ├── config.rs
-│   │   │   ├── errors.rs
-│   │   │   ├── openapi.rs
 │   │   │   ├── bin
 │   │   │   │   ├── app.rs
 │   │   │   │   ├── migration.rs
@@ -102,19 +143,40 @@ $~/dev/learning-rust/axum  just
 │   │   │   │       ├── mod.rs
 │   │   │   │       ├── pagination.rs
 │   │   │   │       └── validation.rs
-│   │   │   └── models
-│   │   │       ├── mod.rs
-│   │   │       ├── author.rs
-│   │   │       └── book.rs
+│   │   │   ├── models
+│   │   │   │   ├── mod.rs
+│   │   │   │   └── book.rs
+│   │   │   ├── config.rs
+│   │   │   ├── errors.rs
+│   │   │   ├── state.rs
+│   │   │   ├── routes.rs
+│   │   │   ├── openapi.rs
+│   │   │   └── lib.rs
+│   │   ├── Toasty.toml
 │   │   ├── toasty
 │   │   │   ├── history.toml
 │   │   │   ├── migrations
 │   │   │   │   └── 0000_migration.sql
 │   │   │   └── snapshots
 │   │   │       └── 0000_snapshot.toml
-│   │   └── Toasty.toml
+│   │   ├── Cargo.toml
+│   │   ├── openapi.yaml
+│   │   ├── compose.yml
+│   │   ├── prod.Dockerfile
+│   │   ├── Dockerfile
+│   │   └── justfile
 │   └── README.md
-├── justfile
+├── Cargo.lock
+├── Cargo.toml
 ├── rustfmt.toml
-└── LICENSE
+├── LICENSE
+├── README.md
+└── justfile
 ```
+
+## Containerization Environment
+
+| Environment    | Rust Image Type                    | Rust Image Size | Postgres Image Type | Postgres Image Size |
+|----------------|------------------------------------|-----------------|---------------------|---------------------|
+| Development    | rust:1.97-slim                     | ~ 900 MB        | postgres:18-alpine  | ~ 300MB             |
+| Production     | distroless/static-debian13:nonroot | ~ 15 MB         |                     |                     |
