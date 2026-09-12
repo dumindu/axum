@@ -137,7 +137,7 @@ rest_api_workspace
 │   │   │   │   ├── mod.rs
 │   │   │   │   ├── book
 │   │   │   │   │   ├── mod.rs
-│   │   │   │   │   ├── handler.rs
+│   │   │   │   │   ├── handlers
 │   │   │   │   │   └── payload.rs
 │   │   │   │   └── shared
 │   │   │   │       ├── mod.rs
