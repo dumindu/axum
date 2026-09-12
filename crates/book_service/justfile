@@ -45,8 +45,6 @@ migration *cmd:
 apidoc:
     cargo run --bin apidoc
 
-## =========================================================================
-
 # Run docker commands
 docker *cmd:
     docker {{ cmd }}
