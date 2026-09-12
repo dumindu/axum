@@ -9,7 +9,7 @@ static GLOBAL: MiMalloc = MiMalloc;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-        "info,tower_http=warn,axum=warn,toasty=warn,tokio_postgres=warn".into()
+        "info,tower_http=error,axum=error,toasty=error,tokio_postgres=error".into()
     });
 
     tracing_subscriber::registry()
