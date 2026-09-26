@@ -1,4 +1,4 @@
-mod handler;
+mod handlers;
 mod payload;
 
 use axum::{Router, routing::get};
@@ -8,13 +8,13 @@ use crate::state::AppState;
 
 pub fn router() -> Router<AppState> {
     Router::new()
-        .route("/", get(handler::list).post(handler::create))
-        .route("/{id}", get(handler::read).put(handler::update).delete(handler::delete))
+        .route("/", get(handlers::list).post(handlers::create))
+        .route("/{id}", get(handlers::read).put(handlers::update).delete(handlers::delete))
 }
 
 #[derive(OpenApi)]
 #[openapi(
-    paths(handler::list, handler::create, handler::read, handler::update, handler::delete),
+    paths(handlers::list, handlers::create, handlers::read, handlers::update, handlers::delete),
     components(schemas(payload::BookRequest))
 )]
 pub struct BookApi;
