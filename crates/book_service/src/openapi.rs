@@ -9,7 +9,7 @@ use utoipa::{OpenApi, openapi::OpenApi as OpenApiDoc};
     components(schemas(
         crate::models::Book,
         crate::errors::ErrorResponse,
-        crate::app::shared::ValidationErrorResponse
+        crate::app::ValidationErrorResponse
     )),
 )]
 pub struct ApiDoc;

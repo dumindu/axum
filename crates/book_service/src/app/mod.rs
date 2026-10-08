@@ -1,2 +1,6 @@
+mod pagination;
+mod validation;
+
 pub mod book;
-pub mod shared;
+pub use pagination::Pagination;
+pub use validation::{ValidatedJson, ValidationErrorResponse};

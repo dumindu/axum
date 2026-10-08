@@ -139,10 +139,8 @@ rest_api_workspace
 │   │   │   │   │   ├── mod.rs
 │   │   │   │   │   ├── handler.rs
 │   │   │   │   │   └── payload.rs
-│   │   │   │   └── shared
-│   │   │   │       ├── mod.rs
-│   │   │   │       ├── pagination.rs
-│   │   │   │       └── validation.rs
+│   │   │   │   ├── pagination.rs
+│   │   │   │   └── validation.rs
 │   │   │   ├── models
 │   │   │   │   ├── mod.rs
 │   │   │   │   └── book.rs

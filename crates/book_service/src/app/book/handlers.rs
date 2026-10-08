@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use super::payload::BookRequest;
 use crate::{
-    app::shared::{Pagination, ValidatedJson, ValidationErrorResponse},
+    app::{Pagination, ValidatedJson, ValidationErrorResponse},
     errors::{Error, ErrorResponse},
     models::Book,
     state::AppState,
