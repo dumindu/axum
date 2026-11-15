@@ -1,4 +1,4 @@
-FROM rust:1.97-slim
+FROM rust:1.100-slim
 WORKDIR /build/crates/book_service
 
 ENV CARGO_TARGET_DIR=/build/target

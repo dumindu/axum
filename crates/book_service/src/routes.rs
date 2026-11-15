@@ -34,20 +34,19 @@ pub fn init(state: AppState) -> Router {
                         .unwrap_or("unknown");
 
                     info_span!(
-                        "http_request",
-                        method = ?request.method(),
-                        uri_path = request.uri().path(),
-                        request_id,
+                        "http request",
+                        method = %request.method(),
+                        path = request.uri().path(),
+                        request_id = request_id,
                         status_code = tracing::field::Empty,
                         latency = tracing::field::Empty
                     )
                 })
                 .on_response(|response: &Response<_>, latency: Duration, span: &Span| {
-                    span.record("status_code", tracing::field::display(response.status()));
+                    span.record("status_code", response.status().as_u16());
                     span.record("latency", latency.as_millis());
-
                     span.in_scope(|| {
-                        info!("request completed");
+                        info!("http request completed");
                     });
                 }),
         )

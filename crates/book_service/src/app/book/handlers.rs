@@ -33,8 +33,8 @@ pub async fn list(
 ) -> Result<impl IntoResponse, Error> {
     let (limit, offset) = pagination.limit_offset();
     let books =
-        Book::all().limit(limit).offset(offset).exec(&mut state.db).await.map_err(|err| {
-            error!(target: "database", "failed to fetch: {err:?}");
+        Book::all().limit(limit).offset(offset).exec(&mut state.db).await.map_err(|error| {
+            error!(target: "db", %error, "db fetch failed");
             Error::DbFetch
         })?;
     Ok((StatusCode::OK, Json(books)))
@@ -65,8 +65,8 @@ pub async fn create(
     })
     .exec(&mut state.db)
     .await
-    .map_err(|err| {
-        error!(target: "database", "failed to insert: {err:?}");
+    .map_err(|error| {
+        error!(target: "db", %error, "db insert failed");
         Error::DbInsert
     })?;
 
@@ -92,11 +92,11 @@ pub async fn read(
     State(mut state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, Error> {
-    let book = Book::get_by_id(&mut state.db, &id).await.map_err(|err| {
-        if err.is_record_not_found() {
+    let book = Book::get_by_id(&mut state.db, &id).await.map_err(|error| {
+        if error.is_record_not_found() {
             Error::NotFound
         } else {
-            error!(target: "database", "failed to fetch: {err:?}");
+            error!(target: "db", %error, "db fetch failed");
             Error::DbFetch
         }
     })?;
@@ -125,11 +125,11 @@ pub async fn update(
     Path(id): Path<Uuid>,
     ValidatedJson(payload): ValidatedJson<BookRequest>,
 ) -> Result<impl IntoResponse, Error> {
-    let mut book = Book::get_by_id(&mut state.db, &id).await.map_err(|err| {
-        if err.is_record_not_found() {
+    let mut book = Book::get_by_id(&mut state.db, &id).await.map_err(|error| {
+        if error.is_record_not_found() {
             Error::NotFound
         } else {
-            error!(target: "database", "failed to fetch: {err:?}");
+            error!(target: "db", %error, "db fetch failed");
             Error::DbFetch
         }
     })?;
@@ -143,8 +143,8 @@ pub async fn update(
     })
     .exec(&mut state.db)
     .await
-    .map_err(|err| {
-        error!(target: "database", "failed to update: {err:?}");
+    .map_err(|error| {
+        error!(target: "db", %error, "db update failed");
         Error::DbUpdate
     })?;
 
@@ -169,8 +169,8 @@ pub async fn delete(
     State(mut state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, Error> {
-    Book::delete_by_id(&mut state.db, id).await.map_err(|err| {
-        error!(target: "database", "failed to delete: {err:?}");
+    Book::delete_by_id(&mut state.db, id).await.map_err(|error| {
+        error!(target: "db", %error, "db delete failed");
         Error::DbDelete
     })?;
 

@@ -2,6 +2,9 @@
 resolver = "3"
 members = ["crates/book_service"]
 
+[workspace.lints.cargo]
+unused_dependencies = "warn"
+
 [workspace.lints.clippy]
 doc_markdown = "warn"
 manual_let_else = "warn"

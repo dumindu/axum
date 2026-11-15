@@ -1,4 +1,4 @@
-FROM rust:1.97-slim AS builder
+FROM rust:1.100-slim AS builder
 
 ARG CARGO_BUILD_TARGET=aarch64-unknown-linux-musl
 
