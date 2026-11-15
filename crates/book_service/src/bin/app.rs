@@ -34,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
     let server_conf = conf.server;
     let state = AppState { db, server_conf };
 
-    info!(addr = %addr, "Starting server");
+    info!(%addr, "starting server");
 
     let listener = tokio::net::TcpListener::bind(&addr).await?;
     let app = routes::init(state);

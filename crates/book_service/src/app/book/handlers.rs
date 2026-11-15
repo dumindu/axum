@@ -70,7 +70,7 @@ pub async fn create(
         Error::DbInsert
     })?;
 
-    info!(id = %saved.id, title = %saved.title, "new book created");
+    info!(id = %saved.id, title = %saved.title, "book created");
 
     Ok((StatusCode::CREATED, Json(saved)))
 }
@@ -148,7 +148,7 @@ pub async fn update(
         Error::DbUpdate
     })?;
 
-    info!(id = %id, "book updated");
+    info!(%id, "book updated");
 
     Ok((StatusCode::OK, Json(book)))
 }
@@ -174,7 +174,7 @@ pub async fn delete(
         Error::DbDelete
     })?;
 
-    info!(id = %id, "book deleted");
+    info!(%id, "book deleted");
 
     Ok(StatusCode::NO_CONTENT)
 }
